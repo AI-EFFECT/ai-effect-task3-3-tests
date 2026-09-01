@@ -4,11 +4,11 @@ This is the only script package to use for the frozen Dutch-node baseline. Do no
 
 ## First-time setup in VS Code
 
-1. Extract the archive to `C:\T33`. The files appear directly in `C:\T33\T33-Dutch-Tests_v1.1`.
+1. Extract the archive to `C:\T33`. The files appear directly in `C:\T33\ai-effect-task3-3-tests\dutch-node`.
 2. Open that folder in VS Code. Open a new PowerShell terminal and run:
 
 ```powershell
-Set-Location C:\T33\T33-Dutch-Tests_v1.1
+Set-Location C:\T33\ai-effect-task3-3-tests\dutch-node
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
 Get-ChildItem -Recurse -Filter *.ps1 | Unblock-File
 Copy-Item .\Test-Settings.psd1.example .\Test-Settings.psd1
