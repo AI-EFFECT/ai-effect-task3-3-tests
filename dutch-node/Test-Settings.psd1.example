@@ -1,0 +1,7 @@
+@{
+    RepositoryRoot    = 'C:\ae33nl'
+    EvidenceRoot      = 'C:\ae33nl-evidence'
+    ExpectedCommit    = '22fbb6eca71265a61bc1f0cee16b6d03f372d554'
+    OrchestratorUrl   = 'http://127.0.0.1:18000'
+    NodePublicBaseUrl = 'http://localhost:8443'
+}
