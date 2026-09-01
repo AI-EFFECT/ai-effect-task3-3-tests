@@ -4,8 +4,14 @@ This is the only script package to use for the frozen Dutch-node baseline. Do no
 
 ## First-time setup in VS Code
 
-1. Extract the archive to `C:\T33`. The files appear directly in `C:\T33\ai-effect-task3-3-tests\dutch-node`.
-2. Open that folder in VS Code. Open a new PowerShell terminal and run:
+1. Clone this repository into `C:\T33`:
+
+```powershell
+Set-Location C:\T33
+git clone https://github.com/adarshsunil/ai-effect-task3-3-tests.git
+```
+
+2. Open `C:\T33\ai-effect-task3-3-tests\dutch-node` in VS Code. Open a new PowerShell terminal and run:
 
 ```powershell
 Set-Location C:\T33\ai-effect-task3-3-tests\dutch-node
