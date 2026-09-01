@@ -1,0 +1,17 @@
+# Local configuration and secrets
+**/Test-Settings.psd1
+**/.env
+**/.env.*
+*.key
+*.pem
+
+# Local evidence and temporary browser/test data
+**/evidence/
+**/cookies/
+**/*.log
+**/*.tmp
+**/*.bak
+
+# Local tools and packaged downloads
+.vscode/
+*.zip
