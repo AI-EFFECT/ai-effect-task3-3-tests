@@ -20,14 +20,15 @@ The VILLASnode-dependent functional, output, repeatability and concurrency tests
 
 ```text
 C:\T33\ai-effect-wp3                AI-EFFECT WP3 source repository
-C:\T33\T33-German-Tests_v2.0        This package
+C:\T33\ai-effect-task3-3-tests\german-node
+                                      This GitHub test package
 C:\ae33de-evidence                   Evidence output
 ```
 
 ## First-time setup
 
 ```powershell
-Set-Location C:\T33\T33-German-Tests_v2.0
+Set-Location C:\T33\ai-effect-task3-3-tests\german-node
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
 Get-ChildItem -Recurse -Filter *.ps1 | Unblock-File
 Copy-Item .\Test-Settings.psd1.example .\Test-Settings.psd1
