@@ -17,7 +17,7 @@ Each node folder is self-contained. It includes the test scripts, setup instruct
 | Node | Package status | Start here |
 |---|---|---|
 | Dutch node | Released | [Dutch-node guide](dutch-node/START-HERE.md) |
-| Germany node | Released as a baseline evidence suite. VILLASnode-dependent end-to-end checks remain blocked by the unavailable supplied image. | [Germany-node guide](german-node/START-HERE.md) |
+| German node | Released as a baseline evidence suite. VILLASnode-dependent end-to-end checks remain blocked by the unavailable supplied image. | [Germany-node guide](german-node/START-HERE.md) |
 | Node 3 | Planned | — |
 | Node 4 | Planned | — |
 
