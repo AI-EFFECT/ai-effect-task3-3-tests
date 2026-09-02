@@ -1,0 +1,10 @@
+@{
+    RepositoryRoot       = 'C:\T33\ai-effect-wp3'
+    GermanyRoot          = 'C:\T33\ai-effect-wp3\use-cases\germany-node'
+    EvidenceRoot         = 'C:\ae33de-evidence'
+    ExpectedCommit       = '486ccc702bb2afca79fb7d31258d62ee0f94dbfc'
+    OrchestratorUrl      = 'http://127.0.0.1:18000'
+    GermanyComposeFile   = 'C:\T33\ai-effect-wp3\use-cases\germany-node\docker-compose.yml'
+    VillasServiceName    = 'villas-node'
+    VillasImage          = ''
+}
