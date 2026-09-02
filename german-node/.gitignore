@@ -1,0 +1,5 @@
+Test-Settings.psd1
+evidence/
+*.log
+*.tmp
+*.zip
