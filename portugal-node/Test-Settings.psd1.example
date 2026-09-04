@@ -1,0 +1,12 @@
+@{
+    RepositoryRoot        = 'C:\T33\ai-effect-wp3'
+    TefServicesRoot       = 'C:\Users\as\OneDrive - Maynooth University\Projects_2025\AI-effect\Portugal_Node\tef-services\tef-services'
+    IntegratedOverlayRoot = 'C:\T33\ai-effect-wp3\use-cases\portugal-node-integrated'
+    SidecarOverlayRoot    = 'C:\T33\ai-effect-wp3\use-cases\portugal-node-sidecar'
+    IntegratedWorkspace   = 'C:\T33\pt33-tef-integrated'
+    SidecarWorkspace      = 'C:\T33\pt33-tef-sidecar'
+    EvidenceRoot          = 'C:\ae33pt-evidence'
+    ExpectedCommit        = '486ccc702bb2afca79fb7d31258d62ee0f94dbfc'
+    OrchestratorUrl       = 'http://127.0.0.1:18000'
+    OrchestratorCompose   = 'C:\T33\ai-effect-wp3\orchestrator\docker-compose.yml'
+}
