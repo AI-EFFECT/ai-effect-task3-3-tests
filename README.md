@@ -18,7 +18,7 @@ Each node folder is self-contained. It includes the test scripts, setup instruct
 |---|---|---|
 | Dutch node | Released | [Dutch-node guide](dutch-node/START-HERE.md) |
 | German node | Released as a baseline evidence suite. VILLASnode-dependent end-to-end checks remain blocked by the unavailable supplied image. | [Germany-node guide](german-node/START-HERE.md) |
-| Node 3 | Planned | — |
+| Portugal node | Released as a conditional-closure evidence suite. The integrated route is validated; the legacy-sidecar route is blocked by the supplied gRPC/HTTP interface mismatch. | [Portugal-node guide](portugal-node/START-HERE.md) |
 | Node 4 | Planned | — |
 
 ## Basic use
@@ -35,6 +35,7 @@ Then open the relevant node folder in VS Code and follow its **START-HERE.md** f
 ```text
 dutch-node/     Dutch-node Task 3.3 suite
 german-node/    Germany-node Task 3.3 baseline evidence suite
+portugal-node/  Portugal-node Task 3.3 reproduction suite
 ```
 
 The suites are intentionally independent. Do not mix scripts or local settings from different nodes.
