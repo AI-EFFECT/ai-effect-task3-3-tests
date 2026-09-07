@@ -1,79 +1,65 @@
 # Advanced HAI Test Sequence
 
-These tests follow `29-Prepare-HAI-Simulator.ps1` and
-`30-Attempt-HAI-Startup.ps1`. Run the matching numbered
-PowerShell script in this folder. They were executed on the frozen baseline on
-1 September 2026. Each script saves its own evidence folder.
+Run these tests after `29-Prepare-HAI-Simulator.ps1` and
+`30-Attempt-HAI-Startup.ps1`. The sequence was reproduced on the frozen Dutch
+baseline during the 7-8 September 2026 closure run. Every script uses labelled
+test sessions and saves timestamped evidence.
 
-## 31 — Two-slot capacity
+## 31 - Two-slot capacity
 
-`31-Test-HAI-Slot-Capacity.ps1` starts three `StartHumanAISession` requests with empty scenario, agent and survey
-names, no KPI filter, and a short `session_timeout_seconds`. The first two must
-return HTTP 200 with `status: pending` and inline participant links. The third
-must return HTTP 200 with `status: failed` and:
+`31-Test-HAI-Slot-Capacity.ps1` submits three sessions to the two-slot default
+configuration. Two must be admitted and the third must be safely refused with a
+clear capacity message. Recorded result: **pass**.
 
-`All 2 session slots are in use. Wait for a session to finish, or increase HAI_SESSION_SLOT_COUNT.`
+## 32 - Timeout reclaim
 
-Recorded result: **pass**.
+`32-Test-HAI-Timeout-Reclaim.ps1` gives two sessions a 30-second budget, waits
+50 seconds and requests a replacement. Both expired sessions remained running
+and occupied the slots. Recorded result: **confirmed defect**.
 
-## 32 — Timeout reclaim
+## 33 - Scoped recovery
 
-`32-Test-HAI-Timeout-Reclaim.ps1` waits longer than the short session budget, verifies both session status endpoints,
-then attempt a replacement session. Correct behaviour would be two failed
-sessions and a pending replacement. The frozen runtime instead showed both
-sessions as `running`, progress `20`, and rejected the replacement because both
-slots were still occupied.
+`33-Clear-HAI-Test-Sessions.ps1` is an emergency helper for interrupted tests.
+Supply only exact labelled Task 3.3 task IDs. It resets matching simulator and
+survey instances and removes their scoped session records. Never use `FLUSHDB`
+or `docker compose down -v` as a test cleanup shortcut.
 
-Recorded result: **confirmed defect**. `SessionService.expire_timed_out_sessions`
-exists but `main.py` does not schedule it.
+## 34 - Signed proxy link
 
-## 33 — Scoped cleanup
+`34-Test-HAI-Signed-Proxy-Link.ps1` verifies the token-to-cookie redirect with
+separate cookie jars. The valid link returned `200`; a one-character token
+change returned `403`. Recorded result: **pass**.
 
-`33-Clear-HAI-Test-Sessions.ps1` is a recovery-only helper. Before using it, inspect `hai:slot:1` and `hai:slot:2` in `hai-redis`.
-Only if they exactly name the labelled test sessions, reset each matching
-simulator (`/hai/reset`) and survey (`/api/reset`), then remove those two slot
-keys, session keys and set memberships. Never use `FLUSHDB` or `docker compose down -v`.
+## 35 - Technical completion lifecycle
 
-Recorded result: **pass**; both slots returned to free.
+`35-Test-HAI-Technical-Lifecycle.ps1` posts labelled synthetic trace and survey
+fixtures, checks completed status and output, verifies the artifact carries both
+fixtures and confirms slot release. It is not a participant study. Recorded
+result: **pass**.
 
-## 34 — Signed proxy link
+## 36 - Restart and rerun
 
-`34-Test-HAI-Signed-Proxy-Link.ps1` starts one session. It keeps the token out of its console output.
-Follow the GUI URL with an empty cookie jar. The redirect exchanges the token
-for a cookie and the final GUI response must be HTTP 200. Append one character
-to the token and repeat with a separate empty cookie jar; final response must
-be HTTP 403. Then perform scoped cleanup.
+`36-Test-HAI-Restart-And-Rerun.ps1` restarts only the HAI control service. The
+active session remained reserved and accessible, then a clean new run started
+after scoped cleanup. Recorded result: **pass**. This does not cover Docker-host,
+Redis-volume or full-machine recovery.
 
-Recorded result: **pass**: valid 200, altered token 403.
+## 51 - Expert UI/UX review
 
-## 35 — Technical completion lifecycle
+`51-Record-HAI-UX-Review.ps1 -Reviewer 'NAME' -StartReviewSession` creates a
+labelled 30-minute review session and copies its signed URL to the Windows
+clipboard without recording the token. It requires explicit confirmation of a
+personally observed live session, collects ten heuristic ratings and removes the
+session afterward.
 
-`35-Test-HAI-Technical-Lifecycle.ps1` is a technical fixture, not a participant study. It starts one session, obtains
-the session token from its local link, then post clearly labelled synthetic JSON
-to the public proxy routes:
+Recorded result: **findings recorded**, mean `3.2/5`; entry/task clarity and
+error recovery were rated `2/5`. The raw notes are brief and include an internal
+wording inconsistency, so the formal report must describe only supported themes
+and record clarification rather than rewrite the original evidence.
 
-* `POST /wp3/collect/session-trace`
-* `POST /wp3/collect/survey-outcome`
+## Evidence boundary
 
-Both must return 200. Fetch `/svc/hai/control/status/{task}` with the service
-bearer token: expected `complete`, progress 100. Fetch `/control/output/{task}`
-and the returned authenticated HTTP data URL. Verify the result artifact carries
-both fixture documents and that the used slot is free.
+Tests 31-36 validate technical behaviour. Script 51 is an expert heuristic
+review. None constitutes a representative usability study, accessibility
+certification, completed operator study or validation of real survey/KPI data.
 
-Recorded result: **pass**.
-
-## 36 — Restart and rerun isolation
-
-`36-Test-HAI-Restart-And-Rerun.ps1` starts one active session, restarts only `hai-testing-service`, and waits for its
-health check. The existing session must remain `running`, its signed GUI link
-must return 200, and its slot must remain reserved. Use scoped cleanup, then
-start and clean a new session. This verifies Redis-backed session persistence
-and isolation of a subsequent run.
-
-Recorded result: **pass**.
-
-## Human validation boundary
-
-None of tests 31–36 proves operator usability or the quality of real survey/KPI
-data. A consenting participant must complete the GUI scenario and questionnaire
-to create that separate type of evidence.

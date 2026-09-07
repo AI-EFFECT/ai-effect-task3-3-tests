@@ -1,39 +1,36 @@
 # AI-EFFECT Task 3.3 - Germany Node Baseline Suite v2.1
 
-This release reproduces the German-node checks that were successfully run on
-the frozen baseline and adds a final dependency closure gate executed on 7
-September 2026. It is a **baseline evidence suite**, not a claim that the
-complete Germany workflow is ready for sign-off.
+This release reproduces available German-node checks and includes the dependency
+closure gate executed on 7 September 2026. It is a baseline evidence suite, not
+an unqualified end-to-end sign-off. See
+[TEST-RESULTS-SUMMARY.md](TEST-RESULTS-SUMMARY.md) for the consolidated outcome.
 
 ## What this release can run
 
 | Script | Result on the frozen baseline |
 |---|---|
 | `00-Preflight-And-Dependency-Check.ps1` | Pass |
-| `01-Start-Core-And-Germany-Services.ps1` | Blocked at the unavailable VILLASnode image; core and adapter services can start |
+| `01-Start-Core-And-Germany-Services.ps1` | Blocked at unavailable VILLASnode image; core and adapter services can start |
 | `02-Test-Authentication.ps1` | Pass |
 | `11-Check-Packaged-Generator-Input.ps1` | Defect confirmed |
 | `40-Test-Workflow-Definition-Validation.ps1` | Pass |
 | `50-Test-Secret-Lifecycle.ps1` | Defect confirmed |
-| `60-Check-VILLAS-Closure-Gate.ps1` | Blocked; resolves the actual `villas-node` Compose service and confirms its configured image is unavailable locally |
+| `60-Check-VILLAS-Closure-Gate.ps1` | Blocked; exact Compose image unavailable locally |
 | `99-Collect-Closeout-Evidence.ps1` | Pass |
 
-The VILLASnode-dependent functional, output, recovery, concurrency and resource
-tests are listed in `BLOCKED-TEST-CATALOG.md`. They are not included as runnable
-scripts because the exact referenced VILLASnode image cannot be retrieved or
-started on the frozen baseline.
+VILLASnode-dependent functional, output, recovery, concurrency, security and
+resource tests are catalogued in `BLOCKED-TEST-CATALOG.md`. They cannot be run
+until the exact owner-approved runtime is available.
 
-## Local layout
+## Local layout and setup
 
 ```text
 C:\T33\ai-effect-wp3
-                                      AI-EFFECT WP3 source repository
+                                      Frozen AI-EFFECT WP3 source
 C:\T33\ai-effect-task3-3-tests\german-node
-                                      This GitHub test package
+                                      Test package
 C:\ae33de-evidence                   Evidence output
 ```
-
-## First-time setup
 
 ```powershell
 Set-Location C:\T33\ai-effect-task3-3-tests\german-node
@@ -42,26 +39,9 @@ Get-ChildItem -Recurse -Filter *.ps1 | Unblock-File
 Copy-Item .\Test-Settings.psd1.example .\Test-Settings.psd1
 ```
 
-Check `Test-Settings.psd1` before running. The default values match the
-documented local layout. `Test-Settings.psd1` is local-only and must not be
-committed.
-
-Create temporary keys in the same terminal before running scripts 01, 02 or 40:
-
-```powershell
-function New-TestSecret {
-    $bytes = New-Object byte[] 32
-    $rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
-    $rng.GetBytes($bytes)
-    $rng.Dispose()
-    -join ($bytes | ForEach-Object { $_.ToString('x2') })
-}
-$env:ORCHESTRATOR_API_KEY = New-TestSecret
-$env:SERVICE_API_KEY = New-TestSecret
-```
-
-Do not display or paste the expanded Compose configuration because it can
-contain temporary test keys.
+Keep `Test-Settings.psd1` local. Generate temporary keys in the same terminal
+without displaying them. Do not print or save expanded Compose configuration,
+because it may contain test keys.
 
 ## Run order
 
@@ -77,26 +57,19 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\99-Collect-Closeout-Ev
 ```
 
 If script 01 reports that the VILLAS image cannot be retrieved, preserve its
-evidence and continue with the non-VILLAS checks. Script 60 must then confirm
-the dependency state without pulling or substituting an image.
+evidence and continue only with the independent checks. Script 60 must confirm
+the dependency state without pulling or substituting another image.
 
-## Expected v2.1 closure position
+## Closure position
 
-- The orchestrator, authentication, packaged-input, workflow-validation,
-  service-key and close-out checks remain reproducible.
-- The configured `villas-node` service requires
+- Frozen commit: `486ccc702bb2afca79fb7d31258d62ee0f94dbfc`.
+- Required Compose image:
   `registry.git.rwth-aachen.de/acs/public/villas/node:hook-timeseries-chronix-conversion`.
-- That exact image was unavailable from the registry and was not present
-  locally during the 7 September 2026 closure run.
-- A local image named `germany-node-villas-chronics` is an adapter image and
-  must not be treated as the external VILLASnode runtime.
-- The correct Task 3.3 status is conditional closure with VILLAS-dependent
-  checks blocked pending an owner-supplied immutable runtime.
+- The exact image was unavailable from the registry and absent locally during
+  closure testing.
+- `germany-node-villas-chronics` is an adapter image, not VILLASnode.
+- Status: conditional closure, with VILLAS-dependent checks blocked.
 
-## Safety boundaries
-
-The scripts do not edit source files, Compose files, dependency locks or
-submodule revisions. Each run creates a timestamped evidence folder under
-`C:\ae33de-evidence`. Do not publish evidence directories, test settings,
-credentials or local Docker configuration in this repository.
+Each run creates timestamped evidence under `C:\ae33de-evidence`. Do not commit
+evidence, settings, credentials or local Docker configuration.
 

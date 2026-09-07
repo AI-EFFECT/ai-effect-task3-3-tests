@@ -1,24 +1,25 @@
 # AI-EFFECT Task 3.3 Test Suites
 
-This repository contains repeatable Windows PowerShell test suites for the AI-EFFECT Task 3.3 use cases.
-
-Each node folder is self-contained. It includes the test scripts, setup instructions, expected baseline results, and release notes needed to repeat the checks locally.
+This repository contains repeatable Windows PowerShell test suites for the
+AI-EFFECT Task 3.3 use cases. Each node folder states its source baseline,
+execution procedure, expected findings and evidence boundary.
 
 ## Before you start
 
-- This repository contains test automation only. It does not contain the node source code.
-- Each suite states the exact source baseline and local folder layout it expects.
-- Read the node's **START-HERE** guide before running any script.
-- Do not commit API keys, local settings files, Docker credentials, evidence folders, or participant data.
-- A failed test can be a known, documented finding. Read the node-specific release notes before recording it as a new issue.
+- This repository contains test automation only; node source code is external.
+- Use the exact source commit and local layout stated in the node guide.
+- Run scripts in the documented order and preserve failed or blocked results.
+- Do not commit API keys, local settings, Docker credentials, evidence folders
+  or participant data.
+- Short timing references are not Task 3.4 scalability or production results.
 
 ## Node suites
 
-| Node | Package status | Start here |
-|---|---|---|
-| Dutch node | Released | [Dutch-node guide](dutch-node/START-HERE.md) |
-| German node | Released as v2.1 baseline and closure-gate evidence suite. The actual Compose VILLASnode image remains unavailable, so VILLAS-dependent end-to-end checks are blocked. | [Germany-node guide](german-node/START-HERE.md) |
-| Portugal node | Released as a conditional-closure evidence suite. The integrated route is validated; the legacy-sidecar route is blocked by the supplied gRPC/HTTP interface mismatch. | [Portugal-node guide](portugal-node/START-HERE.md) |
+| Node | Package status | Start here | Results |
+|---|---|---|---|
+| Dutch node | Released as v1.2 reproduction and closure-reference suite. Core services run, but shared handoff, synthesizer semantic-output and HAI timeout-reclaim defects remain. | [Dutch guide](dutch-node/START-HERE.md) | [Dutch results](dutch-node/TEST-RESULTS-SUMMARY.md) |
+| German node | Released as v2.1 baseline and closure-gate suite. The exact Compose VILLASnode image is unavailable, so VILLAS-dependent end-to-end checks remain blocked. | [German guide](german-node/START-HERE.md) | [German results](german-node/TEST-RESULTS-SUMMARY.md) |
+| Portugal node | Released as a conditional-closure evidence suite. The integrated route is validated; the legacy-sidecar route is blocked by the supplied gRPC/HTTP interface mismatch. | [Portugal guide](portugal-node/START-HERE.md) | See node folder |
 
 ## Basic use
 
@@ -27,15 +28,14 @@ Set-Location C:\T33
 git clone https://github.com/adarshsunil/ai-effect-task3-3-tests.git
 ```
 
-Then open the relevant node folder in VS Code and follow its **START-HERE.md** file exactly.
+Then open the relevant node folder and follow its `START-HERE.md` exactly.
+The suites are independent; do not mix scripts or settings between nodes.
 
 ## Repository structure
 
 ```text
-dutch-node/     Dutch-node Task 3.3 suite
-german-node/    Germany-node Task 3.3 baseline and closure-gate suite
-portugal-node/  Portugal-node Task 3.3 reproduction suite
+dutch-node/     Dutch reproduction and closure-reference suite
+german-node/    German baseline and dependency closure-gate suite
+portugal-node/  Portugal reproduction and conditional-closure suite
 ```
-
-The suites are intentionally independent. Do not mix scripts or local settings from different nodes.
 

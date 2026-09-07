@@ -1,31 +1,51 @@
-# Release notes — v1.1
+# Release Notes - v1.2
 
-This release replaces every earlier Dutch-node test-script package. Use this
-package on its own; do not copy scripts from older folders into it.
+This release adds the final Dutch-node Task 3.3 closure checks validated on 8
+September 2026 against source commit
+`22fbb6eca71265a61bc1f0cee16b6d03f372d554`.
 
-What changed in v1.1:
+## Added
 
-- Added `29-Prepare-HAI-Simulator.ps1`. It verifies or builds the required local
-  `powergrid-simulator-app:latest` image from the pinned PowerGrid source.
-- Script 30 now checks for that image before starting HAI. If it is missing, it
-  stops with the exact corrective action instead of leaving an unclear Docker
-  pull failure in the log.
-- `START-HERE.md` includes the new step and explains why it is required.
+- `50-Measure-Dutch-Reference.ps1` repeats the released synthesizer and
+  benchmark checks three times by default and records wall-clock duration plus
+  container resource snapshots.
+- Script 50 validates each child evidence folder, required artifacts and result
+  marker. Child process exit code is retained as diagnostic metadata rather
+  than used as the functional verdict.
+- `51-Record-HAI-UX-Review.ps1` creates a labelled review session, copies its
+  signed URL to the clipboard without recording the token, collects ten expert
+  heuristic ratings and cleans the session.
+- `TEST-RESULTS-SUMMARY.md` separates passes, defects, supplementary findings
+  and T3.4 handover items.
 
-This closes the only release-packaging gap identified during the final handover
-review: the HAI test sequence is now self-contained for a clean machine that
-has the stated repository baseline and Docker prerequisites.
+## Validated closure results
 
-What changed in v1.0:
+- Three synthesizer runs produced complete evidence with mean harness duration
+  `16.740 s` and range `16.683-16.796 s`.
+- Three benchmark runs produced complete evidence with mean harness duration
+  `16.828 s` and range `16.769-16.885 s`.
+- These measurements include orchestration polling and artifact collection and
+  are initial technical references only, not scalability results.
+- The expert HAI review rated all ten areas, with mean `3.2/5`; entry/task
+  clarity and error recovery received ratings of `2/5`.
 
-What changed:
+## Findings retained
 
-- The synthesizer artifact validator now reads the actual `GridData` schema. Empty pandapower tables are counted as zero instead of causing a PowerShell property error.
-- The advanced HAI checks are now real PowerShell scripts: capacity, timeout/reclaim, scoped cleanup, signed links, technical lifecycle, and restart/rerun.
-- Signed-link checks use temporary cookie jars, so they test the real token-to-cookie redirect path.
-- The lifecycle check uses the documented public collection routes and validates the returned result reference and artifact.
-- `START-HERE.md` has one complete run order and states which test records a known defect rather than stopping the suite.
+- Shared workflow logical-format/DataReference handoff failure.
+- Synthesizer semantic-output loss in the pandapower representation.
+- HAI timeout-reclaim failure, despite correct cleanup after normal completion.
+- Repeated synthesizer and benchmark runs reported stable task identifiers;
+  investigate artifact isolation/overwrite behaviour before concurrent use.
+- The UI/UX notes are an expert heuristic record, not participant evidence;
+  brief or internally inconsistent comments require clarification in the formal
+  deliverable narrative rather than retrospective alteration of raw evidence.
 
-The expected frozen-baseline outcome has not changed. In particular, the
-synthesizer topology and shared workflow format issues remain defects, while
-the HAI timeout-reclaim test is expected to confirm a known defect.
+Superseded local harness attempts and credential-mismatch measurements are not
+part of this release. Evidence, settings and credentials are not committed.
+
+## Earlier release
+
+Version 1.1 added the explicit PowerGrid simulator-image prerequisite and the
+self-contained HAI startup path. Version 1.0 introduced the corrected artifact
+validator and advanced HAI capacity, security, lifecycle and restart checks.
+
