@@ -17,9 +17,8 @@ Each node folder is self-contained. It includes the test scripts, setup instruct
 | Node | Package status | Start here |
 |---|---|---|
 | Dutch node | Released | [Dutch-node guide](dutch-node/START-HERE.md) |
-| German node | Released as a baseline evidence suite. VILLASnode-dependent end-to-end checks remain blocked by the unavailable supplied image. | [Germany-node guide](german-node/START-HERE.md) |
+| German node | Released as v2.1 baseline and closure-gate evidence suite. The actual Compose VILLASnode image remains unavailable, so VILLAS-dependent end-to-end checks are blocked. | [Germany-node guide](german-node/START-HERE.md) |
 | Portugal node | Released as a conditional-closure evidence suite. The integrated route is validated; the legacy-sidecar route is blocked by the supplied gRPC/HTTP interface mismatch. | [Portugal-node guide](portugal-node/START-HERE.md) |
-| Node 4 | Planned | — |
 
 ## Basic use
 
@@ -34,8 +33,9 @@ Then open the relevant node folder in VS Code and follow its **START-HERE.md** f
 
 ```text
 dutch-node/     Dutch-node Task 3.3 suite
-german-node/    Germany-node Task 3.3 baseline evidence suite
+german-node/    Germany-node Task 3.3 baseline and closure-gate suite
 portugal-node/  Portugal-node Task 3.3 reproduction suite
 ```
 
 The suites are intentionally independent. Do not mix scripts or local settings from different nodes.
+
