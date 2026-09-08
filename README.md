@@ -32,6 +32,7 @@ Each node folder uses the same documentation pattern:
 3. `SCRIPT-GUIDE.md` — one-line purpose and interpretation for every script.
 4. `TEST-RESULTS-SUMMARY.md` — reviewed findings and evidence references.
 5. `RELEASE-NOTES.md` — package history and changes.
+6. [`DEVELOPER-NOTES.md`](DEVELOPER-NOTES.md) — shared harness conventions, evidence rules and safe-change guidance.
 
 Clone the repository, choose one node and follow its `START-HERE.md`. The suites are independent; do not mix settings or scripts between nodes.
 

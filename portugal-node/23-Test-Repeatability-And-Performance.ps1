@@ -27,6 +27,7 @@ foreach ($container in @('tef-data-provision','tef-knowledge-store','tef-synthet
 $e = New-T33PortugalEvidence $s '23-repeatability-performance-reference'
 Start-T33PortugalTranscript $e
 
+# Capture point-in-time container statistics before, during and after each run.
 function Add-PortugalResourceSample {
     param([string]$Path, [int]$Iteration, [string]$Phase)
     $timestamp = Get-Date -Format o
@@ -36,6 +37,7 @@ function Add-PortugalResourceSample {
     }
 }
 
+# Resolve the final generated-data reference and retain the referenced CSV.
 function Get-PortugalFinalCsv {
     param($Tasks, [string]$OutputPath)
     $candidates = @($Tasks.tasks | Where-Object {
@@ -62,6 +64,7 @@ try {
     $dockerInfoPath = Join-Path $workspace 'export\dockerinfo.json'
     if (-not (Test-Path $blueprintPath) -or -not (Test-Path $dockerInfoPath)) { throw 'Exported integrated workflow definition is missing.' }
 
+    # Run the same bounded workload repeatedly under the same frozen baseline.
     $measurements = @()
     for ($iteration = 1; $iteration -le $Repetitions; $iteration++) {
         Write-Host "=== Portugal repeatability run $iteration of $Repetitions; MaxRows=$MaxRows ==="
@@ -95,6 +98,7 @@ try {
         Save-T33Text (Join-Path $e "run-$iteration-workflow.json") $workflowResponse.Content
         Save-T33Text (Join-Path $e "run-$iteration-tasks.json") $taskResponse.Content
         Add-PortugalResourceSample -Path $statsPath -Iteration $iteration -Phase 'after'
+        # Reduce each run to comparable timing and output-structure measures.
         $duration = [math]::Round(((Get-Date) - $started).TotalSeconds, 3)
         $csvPath = Join-Path $e "run-$iteration-generated-data.csv"
         $content = Get-PortugalFinalCsv -Tasks $tasks -OutputPath $csvPath
@@ -111,6 +115,7 @@ try {
         }
     }
 
+    # Aggregate only the T3.3 repeatability reference; this is not load testing.
     $measurements | Export-Csv -Path (Join-Path $e 'measurements.csv') -NoTypeInformation -Encoding utf8
     $measurements | ConvertTo-Json -Depth 20 | Set-Content -Path (Join-Path $e 'measurements.json') -Encoding utf8
     $completed = @($measurements | Where-Object Status -in @('complete','completed'))

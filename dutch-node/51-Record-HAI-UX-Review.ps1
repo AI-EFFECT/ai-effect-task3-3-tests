@@ -23,6 +23,7 @@ $evidence = New-EvidenceFolder $settings '51-hai-expert-ux-review'
 Start-Transcript -Path (Join-Path $evidence 'run.txt') -Force
 $reviewSession = $null
 
+# Accept a bounded rating while allowing the reviewer to mark an item not applicable.
 function Read-Rating {
     param([string]$Prompt)
     do {
@@ -37,6 +38,7 @@ function Read-Rating {
 
 try {
     $liveSessionObserved = $ObservedLiveSession.IsPresent
+    # Optionally create a labelled live session without writing its signed URL to evidence.
     if ($StartReviewSession) {
         $key = Get-HAIServiceKey
         $reviewSession = Start-HAITestSession -ServiceKey $key -Label 'uxreview' -TimeoutSeconds 1800
@@ -67,6 +69,7 @@ try {
     }
 
     Write-Host 'This is an expert heuristic review of the technical interface. It is not a participant study.'
+    # Fixed heuristic areas make reviews comparable while observations remain free text.
     $checks = @(
         @{ Id='UX-01'; Area='Entry and task clarity'; Question='How clearly does the interface explain what the operator must do?' },
         @{ Id='UX-02'; Area='Navigation'; Question='How easily can the operator identify the current step and the next action?' },
@@ -97,6 +100,7 @@ try {
         }
     }
 
+    # Retain both spreadsheet-friendly and structured versions of the review.
     $results | Export-Csv -Path (Join-Path $evidence 'hai-ux-review.csv') -NoTypeInformation -Encoding utf8
     Save-Json $results (Join-Path $evidence 'hai-ux-review.json')
     $numeric = @($results | Where-Object { $null -ne $_.Rating })
@@ -115,6 +119,7 @@ try {
     }
 }
 finally {
+    # Always remove the temporary review session created by this script.
     if ($null -ne $reviewSession) {
         [void](Remove-HAITestSession -TaskId $reviewSession.TaskId -RemoveRecord)
     }

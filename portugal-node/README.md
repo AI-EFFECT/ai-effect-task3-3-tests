@@ -35,6 +35,7 @@ Different output hashes were expected from unseeded generation; the suite does n
 - [Reviewed test results](TEST-RESULTS-SUMMARY.md)
 - [Known findings](KNOWN-FINDINGS.md)
 - [Release notes](RELEASE-NOTES.md)
+- [Shared developer notes](../DEVELOPER-NOTES.md)
 
 The external TEF source is copied into marked disposable workspaces. The test package does not silently modify the supplied source fixture.
 

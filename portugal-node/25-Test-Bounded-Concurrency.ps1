@@ -25,6 +25,7 @@ foreach ($container in @((Get-T33OrchestratorContainer),'tef-data-provision','te
 $e = New-T33PortugalEvidence $s '25-bounded-concurrency'
 Start-T33PortugalTranscript $e
 
+# Retain each workflow's final generated CSV and return its data-row count.
 function Save-ConcurrentFinalCsv {
     param([int]$Index, [string]$TaskEvidencePath)
     if (-not (Test-Path -LiteralPath $TaskEvidencePath)) { return 0 }
@@ -47,6 +48,7 @@ try {
     if ($ParallelWorkflows -ne 2) { throw 'T3.3 closure is intentionally limited to exactly two overlapping workflows.' }
     $blueprintPath = Join-Path $workspace 'export\blueprint.json'
     $dockerInfoPath = Join-Path $workspace 'export\dockerinfo.json'
+    # Submit exactly two workflows before polling either one, creating overlap.
     $submitted = @()
     for ($index = 1; $index -le $ParallelWorkflows; $index++) {
         $request = @{
@@ -64,6 +66,7 @@ try {
         $submitted += [pscustomobject]@{Index=$index;WorkflowId=$id;StartedAt=$started;Status='submitted';FinishedAt=$null}
     }
 
+    # Poll both workflows together and sample shared container resources.
     $statsPath = Join-Path $e 'resource-samples.tsv'
     "timestamp`tcontainer`tCPU`tMemoryUsage`tMemoryPercent`tPIDs" | Set-Content -Path $statsPath -Encoding utf8
     $deadline = (Get-Date).AddSeconds($TimeoutSeconds)
@@ -85,6 +88,7 @@ try {
         }
     } while (@($submitted | Where-Object Status -notin @('complete','completed','failed')).Count -gt 0 -and (Get-Date) -lt $deadline)
 
+    # Convert the retained per-workflow evidence into one reviewable result table.
     foreach ($item in $submitted) {
         if ($item.Status -notin @('complete','completed','failed')) { $item.Status='timeout';$item.FinishedAt=Get-Date }
     }

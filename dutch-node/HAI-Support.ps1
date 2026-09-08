@@ -13,6 +13,7 @@ $ErrorActionPreference = 'Stop'
 
 . (Join-Path $PSScriptRoot '_Support.ps1')
 
+# Deployment readiness and service-key discovery
 function Initialize-HAITest {
     $settings = Read-Settings
     Assert-Baseline $settings
@@ -28,6 +29,7 @@ function Get-HAIServiceKey {
     return $entry.Substring('SERVICE_API_KEY='.Length)
 }
 
+# Redis-backed slot state used by the capacity and cleanup tests
 function Get-HAISlots {
     [PSCustomObject]@{
         Slot1 = (docker exec hai-redis redis-cli --raw GET hai:slot:1).Trim()
@@ -35,6 +37,7 @@ function Get-HAISlots {
     }
 }
 
+# Create an isolated technical session and decode its inline signed links.
 function Start-HAITestSession {
     param([Parameter(Mandatory)][string]$ServiceKey,[Parameter(Mandatory)][string]$Label,[int]$TimeoutSeconds=300)
     $nonce=[Guid]::NewGuid().ToString('N').Substring(0,12)
@@ -58,6 +61,7 @@ rm -f /tmp/t33-hai-request.json
     [PSCustomObject]@{TaskId=$taskId;Response=$response;ResponseText=$text;Links=$links}
 }
 
+# Session observation and controlled test cleanup
 function Get-HAIStatus {
     param([Parameter(Mandatory)][string]$ServiceKey,[Parameter(Mandatory)][string]$TaskId)
     $text=@(docker exec hai-testing-service curl -sS -H "Authorization: Bearer $ServiceKey" "http://localhost:8080/control/status/$TaskId") -join "`n"
@@ -79,6 +83,7 @@ function Remove-HAITestSession {
     return $true
 }
 
+# Post-restart readiness check used by the rerun test
 function Wait-HAIHealthy {
     $deadline=(Get-Date).AddSeconds(120)
     while((Get-Date)-lt $deadline){

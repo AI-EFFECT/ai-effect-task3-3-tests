@@ -34,6 +34,7 @@ The short timing data is an initial reference for later monitoring, not a Task 3
 - [Reviewed test results](TEST-RESULTS-SUMMARY.md)
 - [Detailed HAI tests](HAI-ADVANCED-TESTS.md)
 - [Release notes](RELEASE-NOTES.md)
+- [Shared developer notes](../DEVELOPER-NOTES.md)
 
 Run the scripts only in the order documented in `START-HERE.md`, using the frozen source revision stated there.
 

@@ -10,6 +10,7 @@ This is an internal helper file loaded by other scripts; do not run it directly.
 #>
 Set-StrictMode -Version Latest
 
+# Settings and frozen-source checks
 function Read-T33PortugalSettings {
     $path = Join-Path $PSScriptRoot 'Test-Settings.psd1'
     if (-not (Test-Path $path)) { throw 'Create Test-Settings.psd1 by copying Test-Settings.psd1.example.' }
@@ -37,11 +38,13 @@ function Assert-T33PortugalBaseline([hashtable]$Settings) {
     if ($dirty.Count -gt 0) { throw 'Repository is not clean. Stop without testing.' }
 }
 
+# Runtime credentials
 function Require-T33PortugalKeys {
     if ([string]::IsNullOrWhiteSpace($env:ORCHESTRATOR_API_KEY)) { throw 'ORCHESTRATOR_API_KEY is not set in this terminal.' }
     if ([string]::IsNullOrWhiteSpace($env:SERVICE_API_KEY)) { throw 'SERVICE_API_KEY is not set in this terminal.' }
 }
 
+# Evidence capture and transcript lifecycle
 function New-T33PortugalEvidence([hashtable]$Settings, [string]$Label) {
     $path = Join-Path $Settings.EvidenceRoot ((Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + $Label)
     New-Item -ItemType Directory -Force $path | Out-Null
@@ -51,6 +54,7 @@ function Start-T33PortugalTranscript([string]$EvidencePath) { Start-Transcript -
 function Stop-T33PortugalTranscript { try { Stop-Transcript } catch { } }
 function Get-T33BearerHeaders([string]$Key) { return @{ Authorization = "Bearer $Key" } }
 
+# Shared Docker resources used by the isolated test workspaces
 function Ensure-T33SharedNetwork {
     & docker network inspect ai-effect-services *> $null
     if ($LASTEXITCODE -eq 0) {
@@ -69,6 +73,7 @@ function Get-T33SharedNetworkOverride([string]$Workspace) {
     return $path
 }
 
+# Test-owned volume names make reset operations narrow and reviewable.
 function Get-T33TestVolumeNames([ValidateSet('Integrated','Sidecar')][string]$Variant) {
     $prefix = if ($Variant -eq 'Integrated') { 'pt33-tef-integrated' } else { 'pt33-tef-sidecar' }
     return @(
@@ -90,6 +95,7 @@ function Remove-T33TestVolumes([ValidateSet('Integrated','Sidecar')][string]$Var
     }
 }
 
+# HTTP and inline-reference helpers
 function Invoke-T33PortugalWebRequest {
     param([Parameter(Mandatory)][string]$Method,[Parameter(Mandatory)][string]$Uri,[hashtable]$Headers=@{},[string]$Body,[string]$ContentType='application/json')
     try {
@@ -110,6 +116,7 @@ function ConvertTo-T33InlineReference([hashtable]$Object) {
     return @{protocol='inline';uri=[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($json));format='json'}
 }
 
+# Container and endpoint readiness
 function Wait-T33Container([string]$Name,[int]$TimeoutSeconds=300) {
     $deadline=(Get-Date).AddSeconds($TimeoutSeconds)
     do {
@@ -139,9 +146,12 @@ function Wait-T33HttpOk([string]$Uri,[int]$TimeoutSeconds=180) {
     throw "HTTP health check did not return 200 within $TimeoutSeconds seconds: $Uri"
 }
 function Save-T33Text([string]$Path,[string]$Content){[IO.File]::WriteAllText($Path,$Content,[Text.UTF8Encoding]::new($false))}
+# Workspace lookup and safety-marker validation
 function Get-T33Workspace([hashtable]$Settings,[ValidateSet('Integrated','Sidecar')][string]$Variant){if($Variant -eq 'Integrated'){return $Settings.IntegratedWorkspace};return $Settings.SidecarWorkspace}
 function Assert-T33Workspace([hashtable]$Settings,[ValidateSet('Integrated','Sidecar')][string]$Variant){$workspace=Get-T33Workspace $Settings $Variant;$marker=Join-Path $workspace '.t33-portugal-workspace.json';if(-not(Test-Path $marker)){throw "$Variant workspace is not prepared. Run its preparation script first."};return $workspace}
 
+# Build a disposable workspace from copies of the supplied source and overlay.
+# Reset is allowed only when the workspace carries the suite's safety marker.
 function New-T33Workspace {
     param([hashtable]$Settings,[ValidateSet('Integrated','Sidecar')][string]$Variant,[switch]$Reset)
     $workspace=Get-T33Workspace $Settings $Variant;$marker=Join-Path $workspace '.t33-portugal-workspace.json'

@@ -11,6 +11,7 @@ This is an internal helper file loaded by other scripts; do not run it directly.
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
+# Settings and frozen-source checks
 function Read-Settings {
     $path = Join-Path $PSScriptRoot 'Test-Settings.psd1'
     if (-not (Test-Path -LiteralPath $path)) { throw "Create Test-Settings.psd1 by copying Test-Settings.psd1.example." }
@@ -40,12 +41,14 @@ function Assert-Baseline {
     } finally { Pop-Location }
 }
 
+# Runtime credentials are read from the current terminal and are never written to evidence.
 function Require-Keys {
     param([hashtable]$Settings,[switch]$OnlyOrchestrator)
     if ([string]::IsNullOrWhiteSpace($Settings.OrchestratorApiKey)) { throw 'ORCHESTRATOR_API_KEY is not available in this terminal.' }
     if (-not $OnlyOrchestrator -and [string]::IsNullOrWhiteSpace($Settings.ServiceApiKey)) { throw 'SERVICE_API_KEY is not available in this terminal.' }
 }
 
+# Evidence and runtime-readiness helpers
 function New-EvidenceFolder {
     param([hashtable]$Settings,[string]$TestId)
     $folder = Join-Path $Settings.EvidenceRoot ("{0}-{1}" -f (Get-Date -Format 'yyyyMMdd-HHmmss'),$TestId)
@@ -68,6 +71,7 @@ function Wait-Container {
     throw "Container $Container did not become ready within $TimeoutSeconds seconds."
 }
 
+# Orchestrator request and workflow-polling helpers
 function Get-OrchestratorHeaders { param([hashtable]$Settings) ; @{Authorization="Bearer $($Settings.OrchestratorApiKey)"} }
 
 function Wait-WorkflowComplete {
@@ -84,4 +88,5 @@ function Wait-WorkflowComplete {
     throw "Workflow $WorkflowId did not finish within $TimeoutSeconds seconds."
 }
 
+# Consistent JSON serialization for retained evidence
 function Save-Json { param($Object,[string]$Path) ; $Object|ConvertTo-Json -Depth 100|Set-Content -Path $Path -Encoding utf8 }

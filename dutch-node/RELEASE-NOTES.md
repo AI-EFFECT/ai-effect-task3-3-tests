@@ -56,3 +56,4 @@ validator and advanced HAI capacity, security, lifecycle and restart checks.
 - Added PowerShell comment-based help to every script and helper in this folder.
 - Clarified defect, blocked-test and Task 3.4 boundaries for teammates and reviewers.
 - No executable test statements, acceptance criteria or recorded T3.3 conclusions were changed in this pass.
+- A follow-up developer-readability pass added section comments to complex helper and control-flow scripts; executable statements remain unchanged.

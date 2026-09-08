@@ -27,6 +27,7 @@ The blocked route can be closed later by rerunning the gate and dependent tests 
 - [Reviewed test results](TEST-RESULTS-SUMMARY.md)
 - [Catalog of blocked checks](BLOCKED-TEST-CATALOG.md)
 - [Release notes](RELEASE-NOTES.md)
+- [Shared developer notes](../DEVELOPER-NOTES.md)
 
 Do not replace the official image when producing baseline evidence. A transparent blocked result is preferable to an unsupported end-to-end claim.
 
