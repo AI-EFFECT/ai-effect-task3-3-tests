@@ -38,7 +38,7 @@ Clone the repository, choose one node and follow its `START-HERE.md`. The suites
 
 ```powershell
 Set-Location C:\T33
-git clone https://github.com/adarshsunil/ai-effect-task3-3-tests.git
+git clone https://github.com/AI-EFFECT/ai-effect-task3-3-tests.git
 ```
 
 ## How to read the results
@@ -61,3 +61,6 @@ Short timing runs and small concurrency checks in this repository establish repr
 - Do not commit API keys, Docker credentials, local settings, evidence folders or participant data.
 - Do not substitute unavailable images or change source fixtures when making an official baseline claim.
 
+## Licence
+
+This repository is licensed under the [Apache License 2.0](LICENSE).
