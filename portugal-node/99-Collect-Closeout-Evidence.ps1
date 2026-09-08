@@ -1,3 +1,13 @@
+<#
+.SYNOPSIS
+Collects source, fixture, workspace, Compose, image and runtime inventories for close-out.
+
+.DESCRIPTION
+Part of the AI-EFFECT Task 3.3 Portuguese node test package. It records evidence for one defined test or review step and should be interpreted only within that stated scope.
+
+.NOTES
+Read README.md and START-HERE.md before running. Preserve the timestamped evidence folder, including failed or blocked results.
+#>
 . (Join-Path $PSScriptRoot '_Support.ps1')
 $s=Read-T33PortugalSettings;Assert-T33PortugalBaseline $s;$e=New-T33PortugalEvidence $s '99-closeout';Start-T33PortugalTranscript $e
 try {

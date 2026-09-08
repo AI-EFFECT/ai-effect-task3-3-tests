@@ -1,3 +1,13 @@
+<#
+.SYNOPSIS
+Runs feature engineering and checks the renamed timestamp and added hour field.
+
+.DESCRIPTION
+Part of the AI-EFFECT Task 3.3 Portuguese node test package. It records evidence for one defined test or review step and should be interpreted only within that stated scope.
+
+.NOTES
+Read README.md and START-HERE.md before running. Preserve the timestamped evidence folder, including failed or blocked results.
+#>
 . (Join-Path $PSScriptRoot '_Support.ps1')
 
 $s = Read-T33PortugalSettings

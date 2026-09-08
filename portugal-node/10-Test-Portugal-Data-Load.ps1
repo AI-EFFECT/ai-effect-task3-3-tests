@@ -1,3 +1,13 @@
+<#
+.SYNOPSIS
+Loads the supplied wind-energy fixture through the integrated control path and validates its CSV output.
+
+.DESCRIPTION
+Part of the AI-EFFECT Task 3.3 Portuguese node test package. It records evidence for one defined test or review step and should be interpreted only within that stated scope.
+
+.NOTES
+Read README.md and START-HERE.md before running. Preserve the timestamped evidence folder, including failed or blocked results.
+#>
 . (Join-Path $PSScriptRoot '_Support.ps1')
 $s=Read-T33PortugalSettings;Assert-T33PortugalBaseline $s;Assert-T33Workspace $s Integrated|Out-Null;Wait-T33Container 'tef-data-provision';$e=New-T33PortugalEvidence $s '10-data-load';Start-T33PortugalTranscript $e
 try {

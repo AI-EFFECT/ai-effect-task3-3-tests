@@ -1,3 +1,13 @@
+<#
+.SYNOPSIS
+Runs the legacy sidecar workflow only after its protocol compatibility gate passes.
+
+.DESCRIPTION
+Part of the AI-EFFECT Task 3.3 Portuguese node test package. It records evidence for one defined test or review step and should be interpreted only within that stated scope.
+
+.NOTES
+Read README.md and START-HERE.md before running. Preserve the timestamped evidence folder, including failed or blocked results.
+#>
 . (Join-Path $PSScriptRoot '_Support.ps1')
 $s=Read-T33PortugalSettings;Require-T33PortugalKeys;Assert-T33PortugalBaseline $s;$workspace=Assert-T33Workspace $s Sidecar;Wait-T33HttpOk 'http://127.0.0.1:18102/health';$e=New-T33PortugalEvidence $s '32-sidecar-workflow';Start-T33PortugalTranscript $e
 try {

@@ -30,3 +30,10 @@ Initial integrated-route and conditional-sidecar reproduction suite. Earlier fix
 
 See [KNOWN-FINDINGS.md](KNOWN-FINDINGS.md) for current findings.
 
+## Documentation and handover pass — 2026-09-08
+
+- Added a node-level `README.md` with a plain-language use-case overview, tested scope, current conclusion and documentation map.
+- Added `SCRIPT-GUIDE.md` covering every PowerShell file in this node package.
+- Added PowerShell comment-based help to every script and helper in this folder.
+- Clarified defect, blocked-test and Task 3.4 boundaries for teammates and reviewers.
+- No executable test statements, acceptance criteria or recorded T3.3 conclusions were changed in this pass.

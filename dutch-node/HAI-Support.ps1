@@ -1,3 +1,13 @@
+<#
+.SYNOPSIS
+Provides shared session, proxy-link and lifecycle helpers for the Dutch HAI tests.
+
+.DESCRIPTION
+Part of the AI-EFFECT Task 3.3 Dutch node test package. It centralises behaviour used by the executable tests.
+
+.NOTES
+This is an internal helper file loaded by other scripts; do not run it directly.
+#>
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 

@@ -1,3 +1,13 @@
+<#
+.SYNOPSIS
+Checks whether graph topology is preserved in the synthesizer artifact's pandapower representation.
+
+.DESCRIPTION
+Part of the AI-EFFECT Task 3.3 Dutch node test package. It records evidence for one defined test or review step and should be interpreted only within that stated scope.
+
+.NOTES
+Read README.md and START-HERE.md before running. Preserve the timestamped evidence folder, including failed or blocked results.
+#>
 . (Join-Path $PSScriptRoot '_Support.ps1')
 $settings=Read-Settings;Assert-Baseline $settings
 $artifact=Get-ChildItem $settings.EvidenceRoot -Recurse -Filter 'synth-artifact.json'|Sort-Object LastWriteTime -Descending|Select-Object -First 1

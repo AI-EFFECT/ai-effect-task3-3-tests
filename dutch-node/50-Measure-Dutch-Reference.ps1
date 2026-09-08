@@ -1,3 +1,13 @@
+<#
+.SYNOPSIS
+Repeats Dutch synthesizer and benchmark workloads to record an initial timing and resource reference.
+
+.DESCRIPTION
+Part of the AI-EFFECT Task 3.3 Dutch node test package. It records evidence for one defined test or review step and should be interpreted only within that stated scope.
+
+.NOTES
+Read README.md and START-HERE.md before running. Preserve the timestamped evidence folder, including failed or blocked results.
+#>
 [CmdletBinding()]
 param(
     [ValidateRange(1, 5)][int]$Repetitions = 3,

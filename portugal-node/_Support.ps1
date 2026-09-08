@@ -1,3 +1,13 @@
+<#
+.SYNOPSIS
+Provides shared settings, workspace, evidence, HTTP and container helpers for the Portuguese tests.
+
+.DESCRIPTION
+Part of the AI-EFFECT Task 3.3 Portuguese node test package. It centralises behaviour used by the executable tests.
+
+.NOTES
+This is an internal helper file loaded by other scripts; do not run it directly.
+#>
 Set-StrictMode -Version Latest
 
 function Read-T33PortugalSettings {

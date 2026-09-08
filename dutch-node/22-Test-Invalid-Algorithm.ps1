@@ -1,3 +1,13 @@
+<#
+.SYNOPSIS
+Verifies that an invalid benchmark algorithm is safely rejected without producing an artifact.
+
+.DESCRIPTION
+Part of the AI-EFFECT Task 3.3 Dutch node test package. It records evidence for one defined test or review step and should be interpreted only within that stated scope.
+
+.NOTES
+Read README.md and START-HERE.md before running. Preserve the timestamped evidence folder, including failed or blocked results.
+#>
 . (Join-Path $PSScriptRoot '_Support.ps1')
 $settings=Read-Settings;Require-Keys $settings;Assert-Baseline $settings;Wait-Container 'benchmark-runner'
 $evidence=New-EvidenceFolder $settings '22-invalid-algorithm';Start-Transcript (Join-Path $evidence 'run.txt') -Force
