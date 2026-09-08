@@ -19,7 +19,7 @@ execution procedure, expected findings and evidence boundary.
 |---|---|---|---|
 | Dutch node | Released as v1.2 reproduction and closure-reference suite. Core services run, but shared handoff, synthesizer semantic-output and HAI timeout-reclaim defects remain. | [Dutch guide](dutch-node/START-HERE.md) | [Dutch results](dutch-node/TEST-RESULTS-SUMMARY.md) |
 | German node | Released as v2.1 baseline and closure-gate suite. The exact Compose VILLASnode image is unavailable, so VILLAS-dependent end-to-end checks remain blocked. | [German guide](german-node/START-HERE.md) | [German results](german-node/TEST-RESULTS-SUMMARY.md) |
-| Portugal node | Released as a conditional-closure evidence suite. The integrated route is validated; the legacy-sidecar route is blocked by the supplied gRPC/HTTP interface mismatch. | [Portugal guide](portugal-node/START-HERE.md) | See node folder |
+| Portugal node | Released as v1.2 conditional-closure suite. The integrated four-stage route, restart/rerun and two-workflow concurrency checks pass; the legacy-sidecar route is blocked by the supplied gRPC/HTTP mismatch. | [Portugal guide](portugal-node/START-HERE.md) | [Portugal results](portugal-node/TEST-RESULTS-SUMMARY.md) |
 
 ## Basic use
 
@@ -36,6 +36,6 @@ The suites are independent; do not mix scripts or settings between nodes.
 ```text
 dutch-node/     Dutch reproduction and closure-reference suite
 german-node/    German baseline and dependency closure-gate suite
-portugal-node/  Portugal reproduction and conditional-closure suite
+portugal-node/  Portugal integrated and conditional-sidecar closure suite
 ```
 

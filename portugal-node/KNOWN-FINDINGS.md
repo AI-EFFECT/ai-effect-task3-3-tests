@@ -1,15 +1,21 @@
-# Known findings and how to interpret them
+# Portugal node: known findings
 
-The table below is the current position for the frozen baseline `486ccc702bb2afca79fb7d31258d62ee0f94dbfc`.
+These findings apply to frozen AI-EFFECT commit `486ccc702bb2afca79fb7d31258d62ee0f94dbfc` and the supplied external TEF fixture used in the 8 September 2026 closure run.
 
-| ID | Finding | Evidence from the recorded run | Impact | Owner action |
+| ID | Finding | Validated evidence | Impact | Recommended owner action |
 |---|---|---|---|---|
-| PT-CFG-01 | Knowledge Store is healthy as an application, but the supplied Compose health check uses `curl` on `/`. The image has no `curl` and the service exposes `/health`. | Script 03: `/health`, `/docs` and `/openapi.json` returned 200. | Docker reports the supplied configuration unhealthy even though the service is available. | Update the official health check to a command available in the image and to `/health`. |
-| PT-CFG-02 | Synthetic Data is available, but its supplied Compose health check calls the undefined root path `/`. | Script 04: `/docs`, `/openapi.json` and `/models` returned 200; `/` returned 404. | Docker reports the supplied configuration unhealthy while the API is available. | Update the official health check to a documented route such as `/openapi.json`, or add a dedicated health endpoint. |
-| PT-SC-01 | The legacy Data Provision container runs gRPC on port 50051. The supplied sidecar Compose and adapter settings expect HTTP on port 600. | Script 31 records the service log and effective Compose configuration. | The legacy-sidecar workflow cannot be run against the supplied combination. The integrated Portugal route is not affected. | Provide an approved gRPC-aware adapter, or a compatible official deployment configuration. Do not substitute a different service image during a baseline test. |
+| PT-CFG-01 | Knowledge Store's supplied Compose healthcheck uses `curl` on `/`; the image has no `curl` and the service health endpoint is `/health`. | Script 03: `/` returned `404`; `/health`, `/docs` and `/openapi.json` returned `200`; `curl` was absent. | Supplied Compose can classify an available application as unhealthy. | Use a command present in the image and call `/health`. |
+| PT-CFG-02 | Synthetic Data's supplied healthcheck calls undefined `/`. | Script 04: `/` and `/health` returned `404`; `/docs`, `/openapi.json` and `/models` returned `200`. | Supplied Compose can classify an available API as unhealthy. | Use a documented endpoint or add a dedicated health endpoint. |
+| PT-SC-01 | Legacy Data Provision runs gRPC on `50051`, while the supplied sidecar expects HTTP on `600`. | Script 31 recorded the running service, gRPC startup log and effective sidecar configuration. | Legacy-sidecar workflow cannot be exercised as supplied; integrated route is unaffected. | Supply an approved gRPC-aware adapter or compatible official deployment configuration. |
 
-## Results that are not implementation findings
+## Recorded observations, not confirmed defects
 
-An early Feature Engineering trial failed because its test fixture did not rename `datetime` to `timestamp`. The service correctly rejected that input. The final feature-engineering test and the full integrated workflow used the explicit mapping and completed successfully.
+- Three repeated integrated runs completed with 1,000 rows and 10 columns each. Their generated-data hashes differed. Synthetic variation is expected, but deterministic reproducibility was not established because the workflow had no asserted fixed-seed contract.
+- Four TEF containers recovered in 38.828 seconds and a new workflow completed. No recovery-time requirement was defined, so this is a reference value rather than an SLA pass.
+- Two overlapping workflows completed with 1,000-row outputs. This is a bounded concurrency smoke test, not a measured capacity limit.
+- The large Synthetic Data image downloaded and resolved substantial ML dependencies during builds. Build optimisation and dependency pinning should be evaluated in T3.4; no build-performance acceptance threshold existed in T3.3.
 
-Earlier package drafts also had ordering and service-name mistakes. They were corrected before the recorded final run. They are not defects in the Portugal node.
+## Test-package corrections
+
+An early feature-engineering fixture omitted the explicit `datetime` to `timestamp` rename, and an early sidecar check inspected the service before its gRPC startup record. Both harness issues were corrected before the validated closure run and are not Portugal-node defects.
+

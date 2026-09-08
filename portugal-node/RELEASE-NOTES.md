@@ -1,23 +1,32 @@
 # Release notes
 
-## Version 1.1 — sidecar readiness correction
+## Version 1.2 - validated closure extension
 
-This release corrects the sidecar compatibility check. Version 1.0 could inspect Data Provision while its container was still starting, before the gRPC startup record was available. Script `31-Start-Sidecar-Services.ps1` now waits for the service's startup record for up to 90 seconds and reports an inconclusive result only if it cannot observe the interface.
+Validated on 8 September 2026 against frozen AI-EFFECT commit `486ccc702bb2afca79fb7d31258d62ee0f94dbfc` and the recorded supplied external TEF fixture.
 
-No Portugal source, integration overlay, or test finding was changed.
+Added:
 
-## Version 1.0 — initial Portugal handover
+- `23-Test-Repeatability-And-Performance.ps1`
+- `24-Test-Restart-And-Rerun.ps1`
+- `25-Test-Bounded-Concurrency.ps1`
+- `TEST-RESULTS-SUMMARY.md`
 
-This release replaces every earlier Portugal test-package draft.
+Recorded closure results:
 
-It contains the test sequence that produced the recorded final evidence on 4 September 2026. The integrated route completed successfully. The legacy-sidecar route was assessed separately and is deliberately stopped at the documented interface mismatch.
+- Three of three integrated workflows completed with stable 1,000-row, 10-column output structure; mean harness-observed duration was 18.864 seconds.
+- Four TEF containers recovered in 38.828 seconds, retained named volumes and completed a post-restart workflow.
+- Two overlapping workflows completed with no incomplete tasks and 1,000 output rows each.
+- The legacy-sidecar path remains blocked by the confirmed gRPC `50051` versus HTTP `600` mismatch.
 
-The following earlier package issues were corrected before this final release:
+Documentation now places close-out inventory before shutdown and explicitly separates T3.3 closure references from T3.4 scalability, long-term monitoring and optimisation work.
 
-1. A Feature Engineering fixture initially used `datetime`. The service correctly requires `timestamp`. The final package makes the same explicit column mapping used in the completed workflow.
-2. The test-only health checks are scoped to disposable workspaces. They use live endpoints only to permit functional testing after the supplied health-check findings have been recorded.
-3. The sidecar workspace uses its own Compose service names. The final compatibility check does not attempt to start adapters when the underlying protocol mismatch is present.
+## Version 1.1 - sidecar readiness correction
 
-These were test-package corrections. They are not Portugal service defects.
+Script 31 waits up to 90 seconds for Data Provision's startup record before classifying the interface. This prevents an inconclusive early inspection from being mistaken for the validated gRPC/HTTP mismatch.
 
-See [KNOWN-FINDINGS.md](KNOWN-FINDINGS.md) for the current configuration and integration findings.
+## Version 1.0 - initial Portugal handover
+
+Initial integrated-route and conditional-sidecar reproduction suite. Earlier fixture mapping, healthcheck isolation and sidecar service-name mistakes were corrected before release and are not Portugal service defects.
+
+See [KNOWN-FINDINGS.md](KNOWN-FINDINGS.md) for current findings.
+
