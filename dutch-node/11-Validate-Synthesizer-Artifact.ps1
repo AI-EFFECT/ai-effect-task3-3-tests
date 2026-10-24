@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-Checks whether graph topology is preserved in the synthesizer artifact's pandapower representation.
+Checks that the synthesizer's pandapower network has a complete topology matching its synthesis metadata.
 
 .DESCRIPTION
 Part of the AI-EFFECT Task 3.3 Dutch node test package. It records evidence for one defined test or review step and should be interpreted only within that stated scope.
@@ -15,25 +15,32 @@ if($null -eq $artifact){throw 'No synthesizer artifact found. Run 10-Test-Synthe
 $evidence=New-EvidenceFolder $settings '11-synthesizer-artifact';Start-Transcript (Join-Path $evidence 'run.txt') -Force
 try {
     $a=Get-Content $artifact.FullName -Raw|ConvertFrom-Json;Copy-Item $artifact.FullName (Join-Path $evidence 'input-artifact.json')
-    # Actual GridData schema: graph_data + serialized pandapower split tables.
-    # Empty split tables may omit `index`; that is zero rows, not a script error.
-    function Get-SplitTableCount($table) {
-        if ($null -eq $table) { return 0 }
-        $inner = $table.PSObject.Properties['__object']
-        if ($null -eq $inner) { $inner = $table.PSObject.Properties['_object'] }
-        if ($null -eq $inner -or $null -eq $inner.Value) { return 0 }
-        $index = $inner.Value.PSObject.Properties['index']
-        if ($null -eq $index -or $null -eq $index.Value) { return 0 }
-        return @($index.Value).Count
+    # GridData is one pp.to_json() network. Each element table is a DataFrame
+    # whose `_object` is itself a JSON string in pandas split orientation.
+    if($a.PSObject.Properties['_class'] -eq $null -or $a._class -ne 'pandapowerNet'){throw 'The artifact is not a serialized pandapowerNet.'}
+    $network=$a._object
+    function Get-SplitTable([string]$name) {
+        $table=$network.PSObject.Properties[$name]
+        if ($null -eq $table -or $null -eq $table.Value) { return $null }
+        $inner=$table.Value._object;if($inner -is [string]){$inner=$inner|ConvertFrom-Json}
+        return $inner
     }
-    $edges=@($a.graph_data.edges).Count
-    $networkProperty = $a.pandapower.PSObject.Properties['_object']
-    if ($null -eq $networkProperty -or $null -eq $networkProperty.Value) { throw 'The artifact has no serialized pandapower network.' }
-    $network = $networkProperty.Value
-    $lineProperty = $network.PSObject.Properties['line']
-    $trafoProperty = $network.PSObject.Properties['trafo']
-    $lines=Get-SplitTableCount $(if ($lineProperty) { $lineProperty.Value } else { $null })
-    $transformers=Get-SplitTableCount $(if ($trafoProperty) { $trafoProperty.Value } else { $null })
-    [pscustomobject]@{SourceArtifact=$artifact.FullName;GraphEdges=$edges;PandapowerLines=$lines;PandapowerTransformers=$transformers}|Format-List
-    if($edges -gt 0 -and ($lines+$transformers)-eq 0){Write-Host 'RESULT: FAIL — graph topology is not preserved in pandapower.'}else{Write-Host 'RESULT: topology check did not reproduce the frozen-baseline defect.'}
+    # Empty split tables may omit `index`; that is zero rows, not a script error.
+    function Get-RowCount($table) { if($null -eq $table -or $null -eq $table.PSObject.Properties['index']){return 0};return @($table.index).Count }
+    function Get-ColumnValues($table,[string]$column) {
+        if($null -eq $table -or (Get-RowCount $table) -eq 0){return @()}
+        $position=[array]::IndexOf(@($table.columns),$column);if($position -lt 0){throw "Table has no column $column."}
+        return @($table.data|ForEach-Object { $_[$position] })
+    }
+    $busTable=Get-SplitTable 'bus';$lineTable=Get-SplitTable 'line';$trafoTable=Get-SplitTable 'trafo'
+    $buses=Get-RowCount $busTable;$lines=Get-RowCount $lineTable;$transformers=Get-RowCount $trafoTable
+    # Every branch must end on a bus that exists, otherwise topology was lost in export.
+    $busIds=@{};if($buses -gt 0){foreach($id in @($busTable.index)){$busIds["$id"]=$true}}
+    $endpoints=@((Get-ColumnValues $lineTable 'from_bus')+(Get-ColumnValues $lineTable 'to_bus')+(Get-ColumnValues $trafoTable 'hv_bus')+(Get-ColumnValues $trafoTable 'lv_bus'))
+    $danglingEndpoints=@($endpoints|Where-Object { -not $busIds.ContainsKey("$_") }).Count
+    $metadata=$network.PSObject.Properties['synthesis_metadata'];if($null -eq $metadata){throw 'The artifact carries no synthesis_metadata.'};$metadata=$metadata.Value
+    $countsMatch=($metadata.buses -eq $buses -and $metadata.lines -eq $lines -and $metadata.transformers -eq $transformers)
+    [pscustomobject]@{SourceArtifact=$artifact.FullName;GridName=$network.name;Buses=$buses;Lines=$lines;Transformers=$transformers;DanglingBranchEndpoints=$danglingEndpoints;MetadataCountsMatch=$countsMatch;PowerFlowConverged=$metadata.power_flow_converged;PandapowerVersion=$metadata.pandapower_version}|Format-List
+    if($buses -eq 0 -or ($lines+$transformers) -eq 0 -or $danglingEndpoints -gt 0 -or -not $countsMatch){Write-Host 'RESULT: FAIL — grid topology is incomplete or inconsistent with its synthesis metadata.'}else{Write-Host 'RESULT: PASS — grid topology is present and consistent with its synthesis metadata.'}
+    if(-not $metadata.power_flow_converged){Write-Host 'NOTE: the service reports that AC power flow did not converge on this grid.'}
 } finally {try{Stop-Transcript}catch{}}

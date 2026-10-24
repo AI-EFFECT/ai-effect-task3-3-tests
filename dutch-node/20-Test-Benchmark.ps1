@@ -24,7 +24,9 @@ try {
     $result=Wait-WorkflowComplete $settings $submission.workflow_id $TimeoutSeconds
     Save-Json $result.Workflow (Join-Path $evidence 'workflow.json');Save-Json $result.Tasks (Join-Path $evidence 'tasks.json')
     $task=$result.Tasks.tasks|Where-Object {$_.task_id}|Select-Object -Last 1;if($null -eq $task){throw 'No benchmark task was returned.'}
-    docker cp "benchmark-runner:/artifacts/$($task.task_id).payload" (Join-Path $evidence 'benchmark-artifact.json');if($LASTEXITCODE -ne 0){throw 'Benchmark artifact was not found.'}
-    docker cp "benchmark-runner:/artifacts/$($task.task_id).meta.json" (Join-Path $evidence 'benchmark-artifact-metadata.json')
-    Write-Host "workflow=$($result.Workflow.status); task=$($task.task_id)";Write-Host 'RESULT: recorded. Frozen baseline may fail at common BenchmarkResult handoff after service execution.'
+    # Artifacts are stored as <workflow_id>.<task_id>; see common/batch_jobs.py.
+    $jobId="$($submission.workflow_id).$($task.task_id)"
+    docker cp "benchmark-runner:/artifacts/$jobId.payload" (Join-Path $evidence 'benchmark-artifact.json');if($LASTEXITCODE -ne 0){throw 'Benchmark artifact was not found.'}
+    docker cp "benchmark-runner:/artifacts/$jobId.meta.json" (Join-Path $evidence 'benchmark-artifact-metadata.json')
+    Write-Host "workflow=$($result.Workflow.status); task=$($task.task_id); job=$jobId";Write-Host 'RESULT: recorded.'
 } finally {try{Stop-Transcript}catch{}}

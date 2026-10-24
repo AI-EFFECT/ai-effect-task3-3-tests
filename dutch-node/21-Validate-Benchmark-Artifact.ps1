@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-Parses the benchmark artifact and inventories its episode, backend and populated KPI fields.
+Parses the benchmark artifact and inventories its scenarios, episodes and populated KPI fields.
 
 .DESCRIPTION
 Part of the AI-EFFECT Task 3.3 Dutch node test package. It records evidence for one defined test or review step and should be interpreted only within that stated scope.
@@ -21,8 +21,17 @@ function Get-LeafValues { param($Value,[string]$Path)
 $evidence=New-EvidenceFolder $settings '21-benchmark-artifact';Start-Transcript (Join-Path $evidence 'run.txt') -Force
 try {
     $a=Get-Content $artifact.FullName -Raw|ConvertFrom-Json;Copy-Item $artifact.FullName (Join-Path $evidence 'input-artifact.json')
-    $leaves=@(Get-LeafValues $a.kpis 'kpis');$populated=@($leaves|Where-Object {$null -ne $_.Value -and "$($_.Value)" -ne ''})
-    [pscustomobject]@{SourceArtifact=$artifact.FullName;EpisodeCount=@($a.episodes).Count;EvaluationBackend=$a.kpis.evaluation_backend;PopulatedKpiLeaves=$populated.Count}|Format-List
-    Save-Json @{source_artifact=$artifact.FullName;sha256=(Get-FileHash $artifact.FullName -Algorithm SHA256).Hash;populated_kpi_leaf_count=$populated.Count;kpi_leaves=$leaves} (Join-Path $evidence 'summary.json')
-    Write-Host 'RESULT: PASS — benchmark artifact parsed and KPI inventory saved.'
+    # BenchmarkResult is grid2benchmark's result: scenarios[] (each with
+    # episodes and kpis), a cross-scenario summary, and service metadata.
+    foreach($field in 'scenarios','summary','metadata'){if($null -eq $a.PSObject.Properties[$field]){throw "Benchmark artifact has no '$field' field."}}
+    $scenarios=@($a.scenarios);$leaves=@();$index=0
+    foreach($scenario in $scenarios){$leaves+=@(Get-LeafValues $scenario.kpis "scenarios[$index].kpis");$index++}
+    $leaves+=@(Get-LeafValues $a.summary 'summary')
+    $populated=@($leaves|Where-Object {$null -ne $_.Value -and "$($_.Value)" -ne ''})
+    $episodeCount=($scenarios|ForEach-Object { @($_.episodes).Count }|Measure-Object -Sum).Sum
+    $warnings=@($a.metadata.warnings)
+    [pscustomobject]@{SourceArtifact=$artifact.FullName;Algorithm=$a.metadata.algorithm;Grid2BenchmarkVersion=$a.metadata.grid2benchmark_version;Grid2OpVersion=$a.metadata.grid2op_version;ScenarioCount=$scenarios.Count;Environments=(@($scenarios|ForEach-Object { $_.environment })-join ', ');EpisodeCount=$episodeCount;PopulatedKpiLeaves=$populated.Count;Warnings=$warnings.Count}|Format-List
+    Save-Json @{source_artifact=$artifact.FullName;sha256=(Get-FileHash $artifact.FullName -Algorithm SHA256).Hash;scenario_count=$scenarios.Count;episode_count=$episodeCount;populated_kpi_leaf_count=$populated.Count;warnings=$warnings;kpi_leaves=$leaves} (Join-Path $evidence 'summary.json')
+    if($scenarios.Count -eq 0 -or $episodeCount -eq 0 -or $populated.Count -eq 0){Write-Host 'RESULT: FAIL — benchmark artifact has no scenarios, episodes or KPI values.'}else{Write-Host 'RESULT: PASS — benchmark artifact parsed and KPI inventory saved.'}
+    foreach($warning in $warnings){Write-Host "NOTE: $warning"}
 } finally {try{Stop-Transcript}catch{}}

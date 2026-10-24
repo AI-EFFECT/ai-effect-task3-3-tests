@@ -12,7 +12,7 @@ This page explains each PowerShell file in the package. Follow the run order in 
 | `11-Validate-Synthesizer-Artifact.ps1` | Compares graph topology with the pandapower representation; a failure is a semantic data-quality finding. |
 | `20-Test-Benchmark.ps1` | Submits the benchmark workflow and retains the benchmark artifact and metadata for review. |
 | `21-Validate-Benchmark-Artifact.ps1` | Parses the benchmark result and inventories episodes, backend and populated KPI leaves. |
-| `22-Test-Invalid-Algorithm.ps1` | Sends an invalid algorithm template and verifies safe rejection without an output artifact. |
+| `22-Test-Invalid-Algorithm.ps1` | Requests an unknown and a path-like algorithm name and verifies safe rejection without an output artifact. |
 | `29-Prepare-HAI-Simulator.ps1` | Verifies or prepares the local PowerGrid simulator image needed by the HAI tests. |
 | `30-Attempt-HAI-Startup.ps1` | Starts the supplied HAI deployment and records container readiness and any startup blocker. |
 | `31-Test-HAI-Slot-Capacity.ps1` | Opens two sessions and confirms that a third request is safely refused at the configured two-slot limit. |

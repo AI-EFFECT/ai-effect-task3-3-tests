@@ -3,15 +3,15 @@
 Use this package on its own for the frozen Dutch-node baseline. Do not mix its
 scripts with earlier local packages. The recorded source is
 `paulban/ai-effect-wp3` at commit
-`22fbb6eca71265a61bc1f0cee16b6d03f372d554` with pinned submodules.
+`e3bc4ca7d74aa2208249b50e1f9456efc8bc01b8` with pinned submodules.
 
 See [TEST-RESULTS-SUMMARY.md](TEST-RESULTS-SUMMARY.md) for the validated outcome.
 
 ## Source preparation
 
 ```powershell
-git clone --no-checkout https://github.com/paulban/ai-effect-wp3.git --branch feat/dutch-node-target-architecture C:\ae33nl
-git -C C:\ae33nl checkout --detach eb0d86159f7b858e0623e04dc827415a066750e7
+git clone --no-checkout https://github.com/paulban/ai-effect-wp3.git --branch services-integration C:\ae33nl
+git -C C:\ae33nl checkout --detach e3bc4ca7d74aa2208249b50e1f9456efc8bc01b8
 git -C C:\ae33nl submodule update --init --recursive
 git -C C:\ae33nl status --short
 ```

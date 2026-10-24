@@ -21,15 +21,15 @@ try {
     $submission=Invoke-RestMethod -Uri "$($settings.OrchestratorUrl)/workflows" -Method Post -Headers (Get-OrchestratorHeaders $settings) -ContentType 'application/json' -Body $body
     $result=Wait-WorkflowComplete $settings $submission.workflow_id $TimeoutSeconds
     Save-Json $result.Workflow (Join-Path $evidence 'workflow.json');Save-Json $result.Tasks (Join-Path $evidence 'tasks.json')
-    # The frozen baseline rejects the service's logical GridData format at the
-    # shared orchestrator boundary.  It therefore publishes no output_refs even
-    # though the Dutch service has completed and retained its own artifact.
     $task=$result.Tasks.tasks|Where-Object {$_.node_key -match 'ConfigureAndSynthesize'}|Select-Object -First 1
     if($null -eq $task){throw 'Synthesizer task was not found in workflow task inventory.'}
     if($task.output_refs){Save-Json $task.output_refs[0] (Join-Path $evidence 'output-reference.json')}
-    docker cp "synthetic-data:/artifacts/$($task.task_id).payload" (Join-Path $evidence 'synth-artifact.json')
+    # common/batch_jobs.py stores artifacts as <workflow_id>.<task_id>, because
+    # task ids repeat across runs of the same blueprint.
+    $jobId="$($submission.workflow_id).$($task.task_id)"
+    docker cp "synthetic-data:/artifacts/$jobId.payload" (Join-Path $evidence 'synth-artifact.json')
     if($LASTEXITCODE -ne 0){throw 'Synthesizer artifact was not found in the service container.'}
-    docker cp "synthetic-data:/artifacts/$($task.task_id).meta.json" (Join-Path $evidence 'synth-artifact-metadata.json')
-    Write-Host "workflow=$($result.Workflow.status); task=$($task.task_id)"
-    Write-Host 'RESULT: service artifact retained. Workflow failure at the common DataReference boundary is recorded separately.'
+    docker cp "synthetic-data:/artifacts/$jobId.meta.json" (Join-Path $evidence 'synth-artifact-metadata.json')
+    Write-Host "workflow=$($result.Workflow.status); task=$($task.task_id); job=$jobId"
+    Write-Host 'RESULT: service artifact retained.'
 } finally {try{Stop-Transcript}catch{}}
