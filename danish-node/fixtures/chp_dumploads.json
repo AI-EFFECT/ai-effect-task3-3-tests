@@ -1,0 +1,9 @@
+{
+  "run_name": "chp_dumploads",
+  "supplies": ["310-D::CHP"],
+  "loads": ["716-D::Dumpload", "330-D::Heat dumpload"],
+  "allow_hx": true,
+  "allow_bypass": false,
+  "max_extra_pipes": 1,
+  "load_topology": "any"
+}

@@ -1,0 +1,6 @@
+Test-Settings.psd1
+*.log
+*.txt
+evidence/
+__pycache__/
+*.pyc

@@ -1,6 +1,6 @@
 # AI-EFFECT Task 3.3 test suites
 
-This repository contains the repeatable test packages used to assess the German, Dutch and Portuguese AI-EFFECT nodes for Task 3.3. It is written for two audiences: teammates who need a quick picture of what was tested, and testers who need to reproduce the work and preserve evidence.
+This repository contains the repeatable test packages used to assess the German, Dutch, Portuguese and Danish AI-EFFECT nodes for Task 3.3. It is written for two audiences: teammates who need a quick picture of what was tested, and testers who need to reproduce the work and preserve evidence.
 
 ## What Task 3.3 covered
 
@@ -21,6 +21,7 @@ The repository records passes, defects and blocked tests. A blocked test is usef
 |---|---|---|
 | [German node](german-node/README.md) | Orchestration and data exchange through the German data-provider, VILLASnode/chronics and output-formatting chain. | **Conditional closure.** Baseline, configuration, authentication and security checks were completed. The exact supplied VILLASnode image was unavailable, so VILLAS-dependent end-to-end execution remains blocked. |
 | [Dutch node](dutch-node/README.md) | Synthetic power-grid data, AI benchmarking and Human–AI Interaction (HAI) session services. | **Conditional closure.** Most service-level and HAI controls worked, but shared handoff, synthesizer topology and HAI timeout-reclaim defects remain. |
+| [Danish node](danish-node/README.md) | Configuration and topology pipeline for SYSLAB district-heating networks: run-configuration assistant (structured or Ollama-parsed prompt), topology generation and SVG rendering. | **Conditional closure.** Structured workflow, output validation, invalid input and restart/rerun passed. Service control endpoints accept unauthenticated calls, overlapping workflows can return each other's outputs, unrecognised terminals fall back to defaults, and the prompt route guesses unrequested settings. Written in Python with the same harness conventions. |
 | [Portuguese node](portugal-node/README.md) | A wind-energy pipeline covering data generation, loading, feature engineering and model training, plus the legacy sidecar integration route. | **Conditional closure.** The integrated four-stage workflow, restart/rerun and bounded-concurrency checks passed. The legacy sidecar route remains blocked by the supplied gRPC/HTTP interface mismatch. |
 
 ## Where to begin
