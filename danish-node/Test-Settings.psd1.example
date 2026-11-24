@@ -1,0 +1,14 @@
+@{
+    # Mac or Linux paths. On Windows use paths such as 'C:\T33\ai-effect-wp3'.
+    RepositoryRoot       = '~/T33/ai-effect-wp3'
+    DenmarkRoot          = '~/T33/ai-effect-wp3/use-cases/denmark-node'
+    EvidenceRoot         = '~/T33/ae33dk-evidence'
+    ExpectedCommit       = 'e8914565e966a2d78879c314f980574769d31b87'
+    OrchestratorUrl      = 'http://127.0.0.1:18000'
+    OrchestratorCompose  = '~/T33/ai-effect-wp3/orchestrator/docker-compose.yml'
+    DenmarkCompose       = '~/T33/ai-effect-wp3/use-cases/denmark-node/docker-compose.yml'
+    OllamaModel          = 'qwen2.5:1.5b'
+    ConfigAssistantUrl   = 'http://127.0.0.1:18101'
+    TopologyGeneratorUrl = 'http://127.0.0.1:18102'
+    DrawTopologyUrl      = 'http://127.0.0.1:18103'
+}
