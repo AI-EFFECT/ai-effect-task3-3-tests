@@ -1,0 +1,50 @@
+# T3.3 third-party vendor pipeline. Built in the disposable vendor workspace by
+# 20-Prepare-Vendor-Pipeline.ps1 from the platform templates at the frozen commit.
+#
+# Unlike the supplied node Compose files, this file follows the practices the
+# security tests check for: ports bound to 127.0.0.1 only, and the service key is
+# required (Compose refuses to start without it) rather than defaulting to empty.
+
+name: t33-vendor
+
+services:
+  vendor-ingest:
+    build:
+      context: .
+      dockerfile: services/vendor_ingest/Dockerfile
+    container_name: t33-vendor-ingest
+    ports:
+      - "127.0.0.1:${T33_VENDOR_INGEST_PORT:-18190}:8080"
+    environment:
+      - SERVICE_API_KEY=${SERVICE_API_KEY:?SERVICE_API_KEY must be set}
+      - VENDOR_DATA_DIR=/vendor-data
+    volumes:
+      - vendor-data:/vendor-data
+    networks:
+      - ai-effect-services
+    restart: unless-stopped
+
+  vendor-model:
+    build:
+      context: .
+      dockerfile: services/vendor_model/Dockerfile
+    container_name: t33-vendor-model
+    ports:
+      - "127.0.0.1:${T33_VENDOR_MODEL_PORT:-18191}:8080"
+    environment:
+      - SERVICE_API_KEY=${SERVICE_API_KEY:?SERVICE_API_KEY must be set}
+      - VENDOR_DATA_DIR=/vendor-data
+    volumes:
+      - vendor-data:/vendor-data
+    networks:
+      - ai-effect-services
+    restart: unless-stopped
+
+volumes:
+  vendor-data:
+    name: t33-vendor-data
+
+networks:
+  ai-effect-services:
+    name: ai-effect-services
+    external: true

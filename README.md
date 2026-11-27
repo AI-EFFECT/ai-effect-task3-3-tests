@@ -23,6 +23,16 @@ The repository records passes, defects and blocked tests. A blocked test is usef
 | [Dutch node](dutch-node/README.md) | Synthetic power-grid data, AI benchmarking and Human–AI Interaction (HAI) session services. | **Conditional closure.** Most service-level and HAI controls worked, but shared handoff, synthesizer topology and HAI timeout-reclaim defects remain. |
 | [Portuguese node](portugal-node/README.md) | A wind-energy pipeline covering data generation, loading, feature engineering and model training, plus the legacy sidecar integration route. | **Conditional closure.** The integrated four-stage workflow, restart/rerun and bounded-concurrency checks passed. The legacy sidecar route remains blocked by the supplied gRPC/HTTP interface mismatch. |
 
+## Supplementary cross-node tests
+
+[`supplementary/`](supplementary/README.md) covers the Task 3.3 elements the node closure runs did not test, using the same checks on every node:
+- security, including access control;
+- restoration and reboot;
+- data exchange with a third-party AI service built from the platform templates;
+- a heuristic UX evaluation.
+
+The elements that depend on partners are listed with their release conditions in its [test catalogue](supplementary/TEST-CATALOGUE.md).
+
 ## Where to begin
 
 Each node folder uses the same documentation pattern:

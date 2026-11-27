@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package vendor_ingest;
+
+// Stand-in third-party service: reads a node output reference and profiles it.
+service VendorIngest {
+  rpc ImportData(ImportDataRequest) returns (ImportDataResponse);
+}
+
+message ImportDataRequest {
+  string protocol = 1;
+  string uri = 2;
+  string format = 3;
+}
+
+message ImportDataResponse {
+  string source_sha256 = 1;
+  int64 source_bytes = 2;
+  int64 records = 3;
+  repeated string columns = 4;
+  string marker = 5;
+}
