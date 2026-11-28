@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package vendor_model;
+
+// Stand-in third-party model: fits a per-column baseline on the ingested data.
+service VendorModel {
+  rpc FitBaseline(ImportDataResponse) returns (FitBaselineResponse);
+}
+
+message ImportDataResponse {
+  string source_sha256 = 1;
+  int64 source_bytes = 2;
+  int64 records = 3;
+  repeated string columns = 4;
+  string marker = 5;
+}
+
+message ColumnModel {
+  string column = 1;
+  double mean = 2;
+  double std = 3;
+  double last = 4;
+  double slope = 5;
+  double next_forecast = 6;
+}
+
+message FitBaselineResponse {
+  string source_sha256 = 1;
+  string source_workflow_id = 2;
+  string marker = 3;
+  repeated ColumnModel models = 4;
+}

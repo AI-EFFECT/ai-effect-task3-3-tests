@@ -56,6 +56,17 @@ function New-EvidenceFolder {
     return $folder
 }
 
+# Runs a Docker existence probe and returns $true on exit code 0. Under ErrorActionPreference
+# 'Stop', Windows PowerShell 5.1 turns a native command's redirected stderr into a terminating
+# error, so a plain `docker image inspect x *> $null` throws instead of setting $LASTEXITCODE.
+function Test-DockerQuiet {
+    param([string[]]$DockerArgs)
+    $previous = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try { & docker @DockerArgs *> $null; return ($LASTEXITCODE -eq 0) }
+    finally { $ErrorActionPreference = $previous }
+}
+
 function Wait-Container {
     param([string]$Container,[int]$TimeoutSeconds=180)
     docker inspect $Container *> $null

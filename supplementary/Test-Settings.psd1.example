@@ -1,0 +1,41 @@
+@{
+    # Shared evidence folder for every supplementary test.
+    EvidenceRoot        = 'C:\ae33sup-evidence'
+
+    # Frozen AI-EFFECT platform clone used for the orchestrator, templates and the German and Portuguese overlays.
+    PlatformRoot        = 'C:\T33\ai-effect-wp3'
+    PlatformCommit      = 'bfe655d6dc58b49dd1e7b09730083971fbf3d29b'
+    OrchestratorUrl     = 'http://127.0.0.1:18000'
+    OrchestratorCompose = 'C:\T33\ai-effect-wp3\orchestrator\docker-compose.yml'
+
+    # Disposable workspace for the third-party vendor pipeline (script 20 creates and marks it).
+    VendorWorkspace     = 'C:\T33\t33-vendor'
+    VendorPortBase      = 18190
+
+    # Stop before testing if less free disk space than this remains on the evidence drive.
+    MinimumFreeGB       = 30
+
+    # One entry per node. ComposeSets: one string per Compose project; several files of one
+    # project are separated by ';' and are passed together (-f a -f b), in order.
+    Nodes = @{
+        Germany = @{
+            SourceRoot     = 'C:\T33\ai-effect-wp3'
+            ExpectedCommit = 'bfe655d6dc58b49dd1e7b09730083971fbf3d29b'
+            ComposeSets    = @('C:\T33\ai-effect-wp3\use-cases\germany-node\docker-compose.yml')
+        }
+        Portugal = @{
+            SourceRoot     = 'C:\T33\ai-effect-wp3'
+            ExpectedCommit = 'bfe655d6dc58b49dd1e7b09730083971fbf3d29b'
+            ComposeSets    = @('C:\T33\pt33-tef-integrated\docker-compose.yml;C:\T33\pt33-tef-integrated\.t33-shared-network.override.yml')
+        }
+        Netherlands = @{
+            SourceRoot     = 'C:\ae33nl'
+            ExpectedCommit = '22fbb6eca71265a61bc1f0cee16b6d03f372d554'
+            ComposeSets    = @(
+                'C:\ae33nl\use-cases\dutch-node-data-synthesizer\docker-compose.yml',
+                'C:\ae33nl\use-cases\dutch-node-benchmarking\docker-compose.yml',
+                'C:\ae33nl\use-cases\dutch-node-hai-testing\docker-compose.yml'
+            )
+        }
+    }
+}

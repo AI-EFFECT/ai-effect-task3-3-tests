@@ -38,8 +38,7 @@ try {
         throw "PowerGrid simulator Compose file is missing: $compose"
     }
 
-    docker image inspect $image *> $null
-    $imageExists = ($LASTEXITCODE -eq 0)
+    $imageExists = Test-DockerQuiet @('image', 'inspect', $image)
 
     if ($imageExists -and -not $ForceRebuild) {
         $imageId = (docker image inspect $image --format '{{.Id}}').Trim()
@@ -61,8 +60,7 @@ try {
         throw 'PowerGrid simulator image build failed. Preserve this transcript and resolve the build failure before running script 30.'
     }
 
-    docker image inspect $image *> $null
-    if ($LASTEXITCODE -ne 0) {
+    if (-not (Test-DockerQuiet @('image', 'inspect', $image))) {
         throw "Build completed but required image was not found: $image"
     }
 

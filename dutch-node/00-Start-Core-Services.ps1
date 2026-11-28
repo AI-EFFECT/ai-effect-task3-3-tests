@@ -17,8 +17,7 @@ Start-Transcript -Path (Join-Path $evidence 'run.txt') -Force
 try {
     Push-Location $settings.RepositoryRoot
     try { Write-Host '=== Baseline ==='; git rev-parse HEAD; git submodule status --recursive } finally { Pop-Location }
-    docker network inspect ai-effect-services *> $null
-    if ($LASTEXITCODE -ne 0) { docker network create ai-effect-services | Out-Null }
+    if (-not (Test-DockerQuiet @('network', 'inspect', 'ai-effect-services'))) { docker network create ai-effect-services | Out-Null }
     $env:NODE_PUBLIC_BASE_URL=$settings.NodePublicBaseUrl
     $orchestrator=Join-Path $settings.RepositoryRoot 'orchestrator\docker-compose.yml'
     $synthesizer=Join-Path $settings.RepositoryRoot 'use-cases\dutch-node-data-synthesizer\docker-compose.yml'

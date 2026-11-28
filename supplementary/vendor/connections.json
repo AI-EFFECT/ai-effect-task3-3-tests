@@ -1,0 +1,18 @@
+{
+  "pipeline": {
+    "name": "T3.3 third-party vendor pipeline",
+    "description": "Independent stand-in AI provider built from the AI-EFFECT service templates. Reads a node output reference, profiles it and fits a simple baseline model.",
+    "service_mapping": {
+      "vendor_ingest": {"ip_address": "vendor-ingest", "port": 8080},
+      "vendor_model": {"ip_address": "vendor-model", "port": 8080}
+    },
+    "connections": [
+      {
+        "from_service": "vendor_ingest",
+        "from_method": "ImportData",
+        "to_service": "vendor_model",
+        "to_method": "FitBaseline"
+      }
+    ]
+  }
+}
