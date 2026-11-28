@@ -92,7 +92,13 @@ function Invoke-T33SupTest {
 # Evidence helpers
 function Save-T33Text([string]$Path, [string]$Content) { [IO.File]::WriteAllText($Path, $Content, [Text.UTF8Encoding]::new($false)) }
 function Save-T33Json([string]$Path, $Object) { Save-T33Text $Path ($Object | ConvertTo-Json -Depth 30) }
-function Save-T33Csv([string]$Path, $Rows) { @($Rows) | Export-Csv -Path $Path -NoTypeInformation -Encoding UTF8 }
+# Enumerates instead of using @($Rows): Windows PowerShell 5.1 throws "Argument types do not match"
+# when @() wraps a generic List. An empty list writes an empty file so the evidence shows "no rows".
+function Save-T33Csv([string]$Path, $Rows) {
+    $items = @(foreach ($row in $Rows) { $row })
+    if ($items.Count -eq 0) { Save-T33Text $Path ''; return }
+    $items | Export-Csv -Path $Path -NoTypeInformation -Encoding UTF8
+}
 
 function Get-T33FreeGB([string]$Path) {
     $root = [IO.Path]::GetPathRoot([IO.Path]::GetFullPath($Path))

@@ -32,7 +32,9 @@ Invoke-T33SupTest -Settings $s -Label '24-before-engine-restart' -Body {
             $state = Get-T33ContainerState $c
             if ($state -notin @('running','healthy','unhealthy','starting')) { continue }
             $policy = (Invoke-T33Docker @('inspect',$c,'--format','{{.HostConfig.RestartPolicy.Name}}')).Output.Trim()
-            $containers.Add([pscustomobject][ordered]@{ Scope = $Scope; Container = $c; StateBefore = $state; RestartPolicy = $policy })
+            # Start time lets script 25 prove that the engine really restarted in between.
+            $startedAt = (Invoke-T33Docker @('inspect',$c,'--format','{{.State.StartedAt}}')).Output.Trim()
+            $containers.Add([pscustomobject][ordered]@{ Scope = $Scope; Container = $c; StateBefore = $state; RestartPolicy = $policy; StartedAt = $startedAt })
         }
     }
     Add-Containers 'Core' (Get-T33CoreContainers)

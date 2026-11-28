@@ -33,6 +33,8 @@ Invoke-T33SupTest -Settings $s -Label '99-closeout' -Body {
     $index = foreach ($folder in (Get-ChildItem $s.EvidenceRoot -Directory | Where-Object { $_.FullName -ne $e -and $_.Name -ne 'ux' } | Sort-Object Name)) {
         $run = Join-Path $folder.FullName 'run.txt'
         $result = if (Test-Path $run) { @(Select-String -LiteralPath $run -Pattern '^RESULT:' | Select-Object -Last 1 | ForEach-Object { $_.Line }) -join '' } else { '' }
+        # A run later found invalid keeps its folder and RESULT line for the record but must not be read as a verdict.
+        if (Test-Path (Join-Path $folder.FullName 'INVALID-RUN.txt')) { $result = "INVALID RUN (see INVALID-RUN.txt) - superseded: $result" }
         [pscustomobject]@{ EvidenceFolder = $folder.Name; Result = $result }
     }
     Save-T33Csv (Join-Path $e 'evidence-index.csv') $index

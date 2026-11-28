@@ -52,14 +52,17 @@ function Find-T33MountForPath([string[]]$Containers, [string]$Path) {
 function Measure-T33Reference($Ref, $Mount) {
     $protocol = [string]$Ref.protocol
     if ($protocol -eq 'inline') { $b = [Convert]::FromBase64String([string]$Ref.uri); return [pscustomobject]@{ Sha = (Get-T33Sha256Hex $b); Bytes = $b.Length; Note = 'decoded inline' } }
+    # No double quotes inside these commands: Windows PowerShell 5.1 does not escape them when it passes
+    # an argument to docker.exe, so the sh -c string would arrive split. set -f stops globbing of the
+    # unquoted $0; DataReference URIs and container paths contain no spaces.
     $shCommand = $null; $runArgs = @('run','--rm')
     if ($protocol -in @('http','https')) {
         $runArgs += @('--network','ai-effect-services')
-        $shCommand = 'wget -q -O /tmp/x "$0" && sha256sum /tmp/x | cut -d" " -f1 && wc -c < /tmp/x'
+        $shCommand = 'set -f; wget -q -O /tmp/x $0 && sha256sum /tmp/x | awk ''{print $1}'' && wc -c < /tmp/x'
     } elseif ($protocol -eq 'file') {
         if ($null -eq $Mount) { return [pscustomobject]@{ Sha = ''; Bytes = -1; Note = 'no node container mount holds this path' } }
         $runArgs += @('-v', "$($Mount.Source):$($Mount.Destination):ro")
-        $shCommand = 'sha256sum "$0" | cut -d" " -f1 && wc -c < "$0"'
+        $shCommand = 'set -f; sha256sum $0 | awk ''{print $1}'' && wc -c < $0'
     } else { return [pscustomobject]@{ Sha = ''; Bytes = -1; Note = "protocol $protocol cannot be read by the harness" } }
     $r = Invoke-T33Docker ($runArgs + @($script:T33HelperImage,'sh','-c',$shCommand,[string]$Ref.uri)) -AllowFailure
     $lines = @($r.Output -split "`n" | ForEach-Object { $_.Trim() } | Where-Object { $_ })
